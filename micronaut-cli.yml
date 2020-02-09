@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: io.realworld.app.micronaut
+---
+testFramework: kotlintest
+sourceLanguage: kotlin
