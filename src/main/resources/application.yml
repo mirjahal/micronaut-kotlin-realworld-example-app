@@ -3,6 +3,16 @@ micronaut:
     name: micronaut
   server:
     context-path: /api
+  security:
+    enabled: true
+    token:
+      jwt:
+        enabled: true
+        signatures:
+          secret:
+            generator:
+              secret: pleaseChangeThisSecretForANewOne
+              jws-algorithm: HS256
 
 datasources:
   default:

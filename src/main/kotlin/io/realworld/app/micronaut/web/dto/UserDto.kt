@@ -8,21 +8,30 @@ import javax.validation.constraints.NotBlank
 @JsonRootName("user")
 sealed class UserDto {
 
-    @Introspected
-    class Request(
-        @get:NotBlank val username: String,
-        @get:NotBlank val email: String,
-        @get:NotBlank val password: String
-    ) : UserDto() {
-        companion object {
-            fun toDomain(userDtoRequest: Request) : User {
-                return User(
-                    username = userDtoRequest.username,
-                    email = userDtoRequest.email,
-                    password = userDtoRequest.password
-                )
+    sealed class Request {
+
+        @Introspected
+        data class Create(
+            @get:NotBlank val username: String,
+            @get:NotBlank val email: String,
+            @get:NotBlank val password: String
+        ) : UserDto() {
+            companion object {
+                fun toDomain(userDtoRequestCreate: Create) : User {
+                    return User(
+                        username = userDtoRequestCreate.username,
+                        email = userDtoRequestCreate.email,
+                        password = userDtoRequestCreate.password
+                    )
+                }
             }
         }
+
+        data class Login(
+            @get:NotBlank val email: String,
+            @get:NotBlank val password: String
+        ) : UserDto()
+
     }
 
     class Response(

@@ -21,7 +21,7 @@ class UserBusinessTest(
     fun userRepository() : UserRepository { return mockk() }
 
     @Test
-    fun `given valid user data when execute save with data then create a new user`() {
+    fun `should create a new user when execute save with valid data`() {
         val user = User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456")
         val userRepositoryMock = getMock(userRepository)
         every { userRepositoryMock.save(any<User>()) } returns user

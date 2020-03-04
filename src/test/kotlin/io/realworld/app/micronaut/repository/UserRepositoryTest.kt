@@ -12,7 +12,7 @@ class UserRepositoryTest(
 ) : AnnotationSpec() {
 
     @Test
-    fun `given a valid User entity when execute save method then user data is persisted`() {
+    fun `should be user data is persisted when execute save`() {
         val user = User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456")
 
         userRepository.save(user)
