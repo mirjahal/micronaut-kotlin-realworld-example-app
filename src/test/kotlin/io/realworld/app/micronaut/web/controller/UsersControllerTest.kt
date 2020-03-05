@@ -69,4 +69,9 @@ class UserControllerTest(
         response.body.get().token shouldBe "123.456.789"
     }
 
+    @Test
+    fun `should return current user when request by token`() {
+
+    }
+
 }
