@@ -8,7 +8,9 @@ import io.micronaut.test.extensions.kotlintest.MicronautKotlinTestExtension.getM
 import io.mockk.every
 import io.mockk.mockk
 import io.realworld.app.micronaut.domain.entity.User
+import io.realworld.app.micronaut.domain.exception.ResourceNotFoundException
 import io.realworld.app.micronaut.repository.UserRepository
+import java.util.Optional
 import java.util.UUID
 
 @MicronautTest
@@ -29,6 +31,27 @@ class UserBusinessTest(
         val userSaved = userBusiness.save(user)
 
         userSaved.id shouldBe user.id
+    }
+
+    @Test
+    fun `should return user when search by email`() {
+        val optionalUser = Optional.of(
+            User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456", "123.456.789")
+        )
+        val userRepositoryMock = getMock(userRepository)
+        every { userRepositoryMock.findByEmail(any()) } returns optionalUser
+
+        val user = userBusiness.findByEmail("almirjr.87@gmail.com")
+
+        optionalUser.get().id shouldBe user.id
+    }
+
+    @Test(expected = ResourceNotFoundException::class)
+    fun `should throw ResourceNotFoundException when does not find by email`() {
+        val userRepositoryMock = getMock(userRepository)
+        every { userRepositoryMock.findByEmail(any()) } throws ResourceNotFoundException()
+
+        userBusiness.findByEmail("123456789")
     }
 
 }

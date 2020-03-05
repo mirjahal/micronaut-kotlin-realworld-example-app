@@ -15,7 +15,7 @@ import javax.validation.Valid
 
 @Validated
 @Controller("/users")
-class UserController(
+class UsersController(
     private var userBusiness: UserBusiness,
     private var authenticationBusiness: AuthenticationBusiness
 ) {

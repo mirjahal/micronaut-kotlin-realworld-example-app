@@ -1,8 +1,9 @@
 package io.realworld.app.micronaut.domain.business.impl
 
 import io.micronaut.security.authentication.AuthenticationException
+import io.micronaut.security.authentication.UserDetails
 import io.micronaut.security.authentication.providers.PasswordEncoder
-import io.micronaut.security.token.jwt.generator.JwtTokenGenerator
+import io.micronaut.security.token.jwt.generator.AccessRefreshTokenGenerator;
 import io.realworld.app.micronaut.domain.business.AuthenticationBusiness
 import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.repository.UserRepository
@@ -11,8 +12,8 @@ import javax.inject.Singleton
 @Singleton
 class AuthenticationBusinessImpl(
     private val userRepository: UserRepository,
-    private var jwtTokenGenerator: JwtTokenGenerator,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+    private var accessRefreshTokenGenerator: AccessRefreshTokenGenerator
 ) : AuthenticationBusiness {
 
     override fun authenticate(email: String, rawPassword: String): User {
@@ -38,13 +39,11 @@ class AuthenticationBusinessImpl(
     }
 
     private fun getAccessToken(user: User): String {
-        val claims = mapOf(
-            "id" to user.id.toString()
-        )
-
-        return jwtTokenGenerator
-            .generateToken(claims)
+        val accessRefreshToken = accessRefreshTokenGenerator
+            .generate(UserDetails(user.email, listOf()))
             .orElseThrow { AuthenticationException() }
+
+        return accessRefreshToken.accessToken
     }
 
     private fun passwordsDoesNotMatch(rawPassword: String, encodedPassword: String) = passwordEncoder.matches(rawPassword, encodedPassword).not()

@@ -19,7 +19,7 @@ import io.realworld.app.micronaut.web.dto.UserDto
 import java.util.UUID
 
 @MicronautTest
-class UserControllerTest(
+class UsersControllerTest(
     @Client("/api") private val httpClient: HttpClient,
     private val userBusiness: UserBusiness,
     private val authenticationBusiness: AuthenticationBusiness
@@ -67,11 +67,6 @@ class UserControllerTest(
         response.body.get().username shouldBe "Almir Jr."
         response.body.get().email shouldBe "almirjr.87@gmail.com"
         response.body.get().token shouldBe "123.456.789"
-    }
-
-    @Test
-    fun `should return current user when request by token`() {
-
     }
 
 }

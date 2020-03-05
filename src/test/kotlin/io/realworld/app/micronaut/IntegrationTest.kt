@@ -9,11 +9,13 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.client.annotation.Client
 import io.micronaut.test.annotation.MicronautTest
+import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.web.dto.UserDto
 
 @MicronautTest
 class IntegrationTest(
-    @Client("/api") private val httpClient: HttpClient
+    @Client("/api") private val httpClient: HttpClient,
+    private val userBusiness: UserBusiness
 ) : AnnotationSpec() {
 
     @Test
@@ -29,7 +31,7 @@ class IntegrationTest(
     }
 
     @Test
-    fun `should return user data when success in login`() {
+    fun `should return user data when login successfully`() {
         val userLoginRequest = UserDto.Request.Login("almirjr.87@gmail.com", "123456")
         val request = HttpRequest.POST("/users/login", userLoginRequest)
         val response = httpClient.toBlocking().exchange(request, UserDto.Response::class.java)
@@ -39,5 +41,4 @@ class IntegrationTest(
         response.body.get().email shouldBe "almirjr.87@gmail.com"
         response.body.get().token.shouldNotBeBlank()
     }
-
 }
