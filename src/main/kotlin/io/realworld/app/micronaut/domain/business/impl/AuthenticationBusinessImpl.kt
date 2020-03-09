@@ -25,12 +25,10 @@ class AuthenticationBusinessImpl(
     }
 
     private fun findUserByCredentials(email: String, rawPassword: String): User {
-        val optionalUser = userRepository.findByEmail(email)
-        if (optionalUser.isEmpty) {
-            throw AuthenticationException()
-        }
+        val user = userRepository
+            .findByEmail(email)
+            .orElseThrow { AuthenticationException() }
 
-        val user = optionalUser.get()
         if (passwordsDoesNotMatch(rawPassword, user.password)) {
             throw AuthenticationException()
         }
@@ -40,12 +38,14 @@ class AuthenticationBusinessImpl(
 
     private fun getAccessToken(user: User): String {
         val accessRefreshToken = accessRefreshTokenGenerator
-            .generate(UserDetails(user.email, listOf()))
+            .generate(UserDetails(user.id.toString(), listOf()))
             .orElseThrow { AuthenticationException() }
 
         return accessRefreshToken.accessToken
     }
 
-    private fun passwordsDoesNotMatch(rawPassword: String, encodedPassword: String) = passwordEncoder.matches(rawPassword, encodedPassword).not()
+    private fun passwordsDoesNotMatch(rawPassword: String, encodedPassword: String) = passwordEncoder
+        .matches(rawPassword, encodedPassword)
+        .not()
 
 }

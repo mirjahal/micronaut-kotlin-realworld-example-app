@@ -17,15 +17,24 @@ sealed class UserDto {
             @get:NotBlank val password: String
         ) : UserDto() {
             companion object {
-                fun toDomain(userDtoRequestCreate: Create) : User {
+                fun toDomain(userDto: Create) : User {
                     return User(
-                        username = userDtoRequestCreate.username,
-                        email = userDtoRequestCreate.email,
-                        password = userDtoRequestCreate.password
+                        username = userDto.username,
+                        email = userDto.email,
+                        password = userDto.password
                     )
                 }
             }
         }
+
+        @Introspected
+        data class Update(
+            val username: String? = null,
+            val email: String? = null,
+            val password: String? = null,
+            val image: String? = null,
+            val bio: String? = null
+        ) : UserDto()
 
         data class Login(
             @get:NotBlank val email: String,

@@ -20,7 +20,9 @@ class UserBusinessTest(
 ) : AnnotationSpec() {
 
     @MockBean(UserRepository::class)
-    fun userRepository() : UserRepository { return mockk() }
+    fun userRepository(): UserRepository {
+        return mockk()
+    }
 
     @Test
     fun `should create a new user when execute save with valid data`() {
@@ -52,6 +54,48 @@ class UserBusinessTest(
         every { userRepositoryMock.findByEmail(any()) } throws ResourceNotFoundException()
 
         userBusiness.findByEmail("123456789")
+    }
+
+    @Test
+    fun `should update user when execute update with valid data`() {
+        val optionalUser = Optional.of(
+            User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456", "123.456.789")
+        )
+        val userToUpdate = optionalUser.get().copy(
+            username = "Almir Jr.",
+            email = "almirjr.87@gmail.com",
+            password = "123456",
+            bio = "Mini bio",
+            image = "image.jpg"
+        )
+
+        val userRepositoryMock = getMock(userRepository)
+        every { userRepositoryMock.findByEmail(any()) } returns optionalUser
+        every { userRepositoryMock.update(any<User>()) } returns userToUpdate
+
+        val updatedUser = userBusiness.update(userToUpdate)
+
+        updatedUser.id shouldBe userToUpdate.id
+        updatedUser.username shouldBe userToUpdate.username
+        updatedUser.email shouldBe userToUpdate.email
+        updatedUser.password shouldBe userToUpdate.password
+        updatedUser.bio shouldBe userToUpdate.bio
+        updatedUser.image shouldBe userToUpdate.image
+        updatedUser.token shouldBe userToUpdate.token
+    }
+
+    @Test
+    fun `should return user when search by id`() {
+        val id = UUID.randomUUID()
+        val optionalUser = Optional.of(
+            User(id, "Almir Jr.", "almirjr.87@gmail.com", "123456", "123.456.789")
+        )
+        val userRepositoryMock = getMock(userRepository)
+        every { userRepositoryMock.findById(any()) } returns optionalUser
+
+        val user = userBusiness.findById(id)
+
+        optionalUser.get().id shouldBe user.id
     }
 
 }

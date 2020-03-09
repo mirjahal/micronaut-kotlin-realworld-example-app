@@ -10,7 +10,7 @@ import java.util.UUID
 class UserDtoTest : AnnotationSpec() {
 
     @Test
-    fun `given a valid UserRequest when execute toDomain method then return a User`() {
+    fun `should return a user from RequestCreate when execute toDomain method`() {
         val userRequest = UserDto.Request.Create("Almir Jr.", "almirjr.87@gmail.com", "123456")
         val user = UserDto.Request.Create.toDomain(userRequest)
 
@@ -20,7 +20,7 @@ class UserDtoTest : AnnotationSpec() {
     }
 
     @Test
-    fun `given a valid User when execute fromEntity method then return a UserResponse with all properties filled`() {
+    fun `should return a UserResponse with all properties filled when execute fromEntity method`() {
         val user = User(UUID.randomUUID(),
             "Almir Jr.",
             "almirjr.87@gmail.com",
@@ -40,7 +40,7 @@ class UserDtoTest : AnnotationSpec() {
     }
 
     @Test
-    fun `given a valid User when execute fromEntity method then return a UserResponse`() {
+    fun `should return a UserResponse when execute fromEntity method`() {
         val user = User(UUID.randomUUID(),
             "Almir Jr.",
             "almirjr.87@gmail.com",

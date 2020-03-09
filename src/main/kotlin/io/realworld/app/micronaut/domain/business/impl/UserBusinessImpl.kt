@@ -5,6 +5,7 @@ import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.domain.exception.ResourceNotFoundException
 import io.realworld.app.micronaut.repository.UserRepository
+import java.util.UUID
 import javax.inject.Singleton
 
 @Singleton
@@ -14,14 +15,29 @@ class UserBusinessImpl(
 ) : UserBusiness {
 
     override fun save(user: User): User {
-        user.password = passwordEncoder.encode(user.password)
+        encodeUserPassword(user)
         return userRepository.save(user)
     }
 
+    override fun update(user: User): User {
+        encodeUserPassword(user)
+        return userRepository.update(user)
+    }
+
     override fun findByEmail(email: String): User {
-        return userRepository.findByEmail(email).orElseThrow {
-            ResourceNotFoundException()
-        }
+        return userRepository
+            .findByEmail(email)
+            .orElseThrow { ResourceNotFoundException() }
+    }
+
+    override fun findById(id: UUID): User {
+        return userRepository
+            .findById(id)
+            .orElseThrow { ResourceNotFoundException() }
+    }
+
+    private fun encodeUserPassword(user: User) {
+        user.password = passwordEncoder.encode(user.password)
     }
 
 }
