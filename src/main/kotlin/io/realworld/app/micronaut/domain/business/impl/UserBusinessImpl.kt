@@ -4,6 +4,7 @@ import io.micronaut.security.authentication.providers.PasswordEncoder
 import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.domain.exception.ResourceNotFoundException
+import io.realworld.app.micronaut.repository.UserFollowRepository
 import io.realworld.app.micronaut.repository.UserRepository
 import java.util.UUID
 import javax.inject.Singleton
@@ -11,7 +12,9 @@ import javax.inject.Singleton
 @Singleton
 class UserBusinessImpl(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
+
+    private val userFollowRepository: UserFollowRepository
 ) : UserBusiness {
 
     override fun save(user: User): User {

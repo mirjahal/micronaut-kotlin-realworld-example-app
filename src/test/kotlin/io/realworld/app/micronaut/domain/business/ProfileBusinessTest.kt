@@ -49,7 +49,7 @@ class ProfileBusinessTest(
         val userFollowRepositoryMock = getMock(userFollowRepository)
         every { userBusinessMock.findByUsername(any()) } returns followedUser
         every { userBusinessMock.findById(any()) } returns followerUser
-        every { userFollowRepositoryMock.existsById(any()) } returns true
+        every { userFollowRepositoryMock.findById(any()).isPresent } returns true
 
         val profile = profileBusiness.get(username, UUID.randomUUID())
 

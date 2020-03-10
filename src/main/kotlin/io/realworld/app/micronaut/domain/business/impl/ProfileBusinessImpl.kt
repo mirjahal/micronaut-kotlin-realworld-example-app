@@ -20,7 +20,7 @@ class ProfileBusinessImpl(
 
         if (currentUserId != null) {
             val followerUser = userBusiness.findById(currentUserId)
-            profile.following = userFollowRepository.existsById(UserFollowPK(followerUser, followedUser))
+            profile.following = userFollowRepository.findById(UserFollowPK(followerUser, followedUser)).isPresent
         }
 
         return profile
