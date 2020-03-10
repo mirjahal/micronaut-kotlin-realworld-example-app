@@ -36,6 +36,12 @@ class UserBusinessImpl(
             .orElseThrow { ResourceNotFoundException() }
     }
 
+    override fun findByUsername(username: String): User {
+        return userRepository
+            .findByUsername(username)
+            .orElseThrow { ResourceNotFoundException() }
+    }
+
     private fun encodeUserPassword(user: User) {
         user.password = passwordEncoder.encode(user.password)
     }

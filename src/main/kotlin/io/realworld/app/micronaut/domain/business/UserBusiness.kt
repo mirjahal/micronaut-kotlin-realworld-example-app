@@ -9,5 +9,6 @@ interface UserBusiness {
     fun update(user: User) : User
     fun findByEmail(email: String): User
     fun findById(id: UUID): User
+    fun findByUsername(username: String): User
 
 }
