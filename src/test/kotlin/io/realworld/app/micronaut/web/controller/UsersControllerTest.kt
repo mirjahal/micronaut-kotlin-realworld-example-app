@@ -2,6 +2,7 @@ package io.realworld.app.micronaut.web.controller
 
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.AnnotationSpec
+import io.micronaut.context.annotation.Value
 import io.micronaut.http.HttpHeaders
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpStatus
@@ -16,13 +17,13 @@ import io.realworld.app.micronaut.domain.business.AuthenticationBusiness
 import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.web.dto.UserDto
-import java.util.UUID
 
 @MicronautTest
 class UsersControllerTest(
     @Client("/api") private val httpClient: HttpClient,
-    private val userBusiness: UserBusiness,
-    private val authenticationBusiness: AuthenticationBusiness
+    @Value("\${realworld.token}") private val token: String,
+    private val authenticationBusiness: AuthenticationBusiness,
+    private val userBusiness: UserBusiness
 ) : AnnotationSpec() {
 
     @MockBean(UserBusiness::class)
@@ -33,40 +34,36 @@ class UsersControllerTest(
 
     @Test
     fun `should create a new user when valid user data`() {
-        val user = User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456")
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userBusinessMock = getMock(userBusiness)
         every { userBusinessMock.save(any()) } returns user
 
-        val userCreateRequest = UserDto.Request.Create("Almir Jr.", "almirjr.87@gmail.com", "123456")
-        val request = HttpRequest.POST("/users", userCreateRequest)
+        val data = UserDto.Request.Create(user.username, user.email, user.password)
+        val request = HttpRequest.POST("/users", data)
         val response = httpClient.toBlocking().exchange(request, UserDto.Response::class.java)
+        val body = response.body.get()
 
         response.status shouldBe HttpStatus.CREATED
         response.header(HttpHeaders.LOCATION) shouldBe "/api/users/${user.id}"
-        response.body.get().username shouldBe "Almir Jr."
-        response.body.get().email shouldBe "almirjr.87@gmail.com"
+        body.username shouldBe user.username
+        body.email shouldBe user.email
     }
 
     @Test
     fun `should return user data when valid user credentials`() {
-        val user = User(
-            UUID.randomUUID(),
-            "Almir Jr.",
-            "almirjr.87@gmail.com",
-            "123456",
-            "123.456.789"
-        )
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456", token = token)
         val authenticationBusinessMock = getMock(authenticationBusiness)
         every { authenticationBusinessMock.authenticate(any(), any()) } returns user
 
-        val userRequestLogin = UserDto.Request.Login("almirjr.87@gmail.com", "123456")
-        val request = HttpRequest.POST("/users/login", userRequestLogin)
+        val data = UserDto.Request.Login(user.email, user.password)
+        val request = HttpRequest.POST("/users/login", data)
         val response = httpClient.toBlocking().exchange(request, UserDto.Response::class.java)
+        val body = response.body.get()
 
         response.status shouldBe HttpStatus.OK
-        response.body.get().username shouldBe "Almir Jr."
-        response.body.get().email shouldBe "almirjr.87@gmail.com"
-        response.body.get().token shouldBe "123.456.789"
+        body.username shouldBe user.username
+        body.email shouldBe user.email
+        body.token shouldBe user.token
     }
 
 }

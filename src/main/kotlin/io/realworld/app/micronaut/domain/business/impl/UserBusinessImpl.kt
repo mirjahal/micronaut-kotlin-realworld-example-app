@@ -12,9 +12,7 @@ import javax.inject.Singleton
 @Singleton
 class UserBusinessImpl(
     private val userRepository: UserRepository,
-    private val passwordEncoder: PasswordEncoder,
-
-    private val userFollowRepository: UserFollowRepository
+    private val passwordEncoder: PasswordEncoder
 ) : UserBusiness {
 
     override fun save(user: User): User {

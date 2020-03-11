@@ -1,4 +1,4 @@
-package io.realworld.app.micronaut.configuration
+package io.realworld.app.micronaut.infrastructure.configuration
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper

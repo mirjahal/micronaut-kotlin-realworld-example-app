@@ -1,8 +1,10 @@
 package io.realworld.app.micronaut.domain.business
 
 import io.kotlintest.matchers.boolean.shouldBeTrue
+import io.kotlintest.matchers.types.shouldBeNull
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.AnnotationSpec
+import io.micronaut.context.annotation.Value
 import io.micronaut.test.annotation.MicronautTest
 import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.kotlintest.MicronautKotlinTestExtension.getMock
@@ -14,9 +16,10 @@ import java.util.UUID
 
 @MicronautTest
 class ProfileBusinessTest(
-    private val userBusiness: UserBusiness,
+    @Value("\${realworld.token}") private val token: String,
+    private val userFollowRepository: UserFollowRepository,
     private val profileBusiness: ProfileBusiness,
-    private val userFollowRepository: UserFollowRepository
+    private val userBusiness: UserBusiness
 ) : AnnotationSpec() {
 
     @MockBean(UserBusiness::class)
@@ -27,33 +30,37 @@ class ProfileBusinessTest(
 
     @Test
     fun `should return profile when valid username and null user id`() {
-        val username = "mirjahal"
-        val user = User(UUID.randomUUID(), username, "almirjr.87@gmail.com", "hashpassword", "123.456.789", "Mini bio", "image.jpg")
+        val user = User(
+            username = "mirjahal",
+            email = "almirjr.87@gmail.com",
+            password = "hashpassword",
+            token = token,
+            bio = "Mini bio",
+            image = "image.jpg")
         val userBusinessMock = getMock(userBusiness)
         every { userBusinessMock.findByUsername(any()) } returns user
 
-        val profile = profileBusiness.get(username)
+        val profile = profileBusiness.get(user.username)
 
-        profile.username shouldBe username
+        profile.username shouldBe user.username
         profile.image shouldBe user.image
         profile.bio shouldBe user.bio
-        profile.following shouldBe null
+        profile.following.shouldBeNull()
     }
 
     @Test
     fun `should return profile with following as true when valid username and valid user id`() {
-        val username = "fulano"
-        val followedUser = User(UUID.randomUUID(), username, "fulano.87@gmail.com", "hashpassword12", "aaa.456.789", "Bios", "selfie.jpg")
-        val followerUser = User(UUID.randomUUID(), "mirjahal", "almirjr.87@gmail.com", "hashpassword", "123.456.789", "Mini bio", "image.jpg")
+        val followerUser = User(username = "mirjahal", email = "almirjr.87@gmail.com", password = "123456", token = token)
+        val followedUser = User(username = "fulano", email = "fulano@gmail.com", password = "abcdef", bio = "Bios", image = "image.jpg")
         val userBusinessMock = getMock(userBusiness)
         val userFollowRepositoryMock = getMock(userFollowRepository)
         every { userBusinessMock.findByUsername(any()) } returns followedUser
         every { userBusinessMock.findById(any()) } returns followerUser
         every { userFollowRepositoryMock.findById(any()).isPresent } returns true
 
-        val profile = profileBusiness.get(username, UUID.randomUUID())
+        val profile = profileBusiness.get(followedUser.username, UUID.randomUUID())
 
-        profile.username shouldBe username
+        profile.username shouldBe followedUser.username
         profile.image shouldBe followedUser.image
         profile.bio shouldBe followedUser.bio
         profile.following!!.shouldBeTrue()

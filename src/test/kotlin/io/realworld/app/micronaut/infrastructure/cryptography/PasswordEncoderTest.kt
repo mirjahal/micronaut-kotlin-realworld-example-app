@@ -1,4 +1,4 @@
-package io.realworld.app.micronaut.infraestructure
+package io.realworld.app.micronaut.infrastructure.cryptography
 
 import io.kotlintest.matchers.boolean.shouldBeFalse
 import io.kotlintest.matchers.boolean.shouldBeTrue

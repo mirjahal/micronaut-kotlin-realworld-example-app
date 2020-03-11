@@ -1,0 +1,9 @@
+datasources:
+  default:
+    url: 'jdbc:h2:mem:realword;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE'
+    username: 'sa'
+    password: ''
+    driverClassName: 'org.h2.Driver'
+
+realworld:
+  token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhMTY2ZDBmNy01YzRhLTRjMDItYTc4ZC0wYjM5MmFiZWQ0ZjAiLCJuYmYiOjE1ODM1OTI5MjAsInJvbGVzIjpbXSwiaXNzIjoibWljcm9uYXV0IiwiaWF0IjoxNTgzNTkyOTIwfQ.o13dMnOsB9yAbY6YaU6Yceq38BEmr1EAwk2UjqINgpM

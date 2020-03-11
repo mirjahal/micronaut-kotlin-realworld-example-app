@@ -26,26 +26,30 @@ class UserBusinessTest(
 
     @Test
     fun `should create a new user when execute save with valid data`() {
-        val user = User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456")
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userRepositoryMock = getMock(userRepository)
         every { userRepositoryMock.save(any<User>()) } returns user
 
-        val userSaved = userBusiness.save(user)
+        val savedUser = userBusiness.save(user)
 
-        userSaved.id shouldBe user.id
+        savedUser.id shouldBe user.id
+        savedUser.username shouldBe user.username
+        savedUser.email shouldBe user.email
+        savedUser.password shouldBe user.password
     }
 
     @Test
     fun `should return user when search by email`() {
-        val optionalUser = Optional.of(
-            User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456", "123.456.789")
-        )
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userRepositoryMock = getMock(userRepository)
-        every { userRepositoryMock.findByEmail(any()) } returns optionalUser
+        every { userRepositoryMock.findByEmail(any()) } returns Optional.of(user)
 
-        val user = userBusiness.findByEmail("almirjr.87@gmail.com")
+        val savedUser = userBusiness.findByEmail("almirjr.87@gmail.com")
 
-        optionalUser.get().id shouldBe user.id
+        savedUser.id shouldBe user.id
+        savedUser.username shouldBe user.username
+        savedUser.email shouldBe user.email
+        savedUser.password shouldBe user.password
     }
 
     @Test(expected = ResourceNotFoundException::class)
@@ -53,24 +57,15 @@ class UserBusinessTest(
         val userRepositoryMock = getMock(userRepository)
         every { userRepositoryMock.findByEmail(any()) } throws ResourceNotFoundException()
 
-        userBusiness.findByEmail("123456789")
+        userBusiness.findByEmail("ze@gmail.com")
     }
 
     @Test
     fun `should update user when execute update with valid data`() {
-        val optionalUser = Optional.of(
-            User(UUID.randomUUID(), "Almir Jr.", "almirjr.87@gmail.com", "123456", "123.456.789")
-        )
-        val userToUpdate = optionalUser.get().copy(
-            username = "Almir Jr.",
-            email = "almirjr.87@gmail.com",
-            password = "123456",
-            bio = "Mini bio",
-            image = "image.jpg"
-        )
-
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
+        val userToUpdate = user.copy(bio = "Mini bio", image = "image.jpg")
         val userRepositoryMock = getMock(userRepository)
-        every { userRepositoryMock.findByEmail(any()) } returns optionalUser
+        every { userRepositoryMock.findByEmail(any()) } returns Optional.of(user)
         every { userRepositoryMock.update(any<User>()) } returns userToUpdate
 
         val updatedUser = userBusiness.update(userToUpdate)
@@ -86,16 +81,16 @@ class UserBusinessTest(
 
     @Test
     fun `should return user when search by id`() {
-        val id = UUID.randomUUID()
-        val optionalUser = Optional.of(
-            User(id, "Almir Jr.", "almirjr.87@gmail.com", "123456", "123.456.789")
-        )
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userRepositoryMock = getMock(userRepository)
-        every { userRepositoryMock.findById(any()) } returns optionalUser
+        every { userRepositoryMock.findById(any()) } returns Optional.of(user)
 
-        val user = userBusiness.findById(id)
+        val userById = userBusiness.findById(user.id)
 
-        optionalUser.get().id shouldBe user.id
+        userById.id shouldBe user.id
+        userById.username shouldBe user.username
+        userById.email shouldBe user.email
+        userById.password shouldBe user.password
     }
 
 }

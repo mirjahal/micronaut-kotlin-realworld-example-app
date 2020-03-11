@@ -2,6 +2,7 @@ package io.realworld.app.micronaut.domain.business
 
 import io.kotlintest.shouldBe
 import io.kotlintest.specs.AnnotationSpec
+import io.micronaut.context.annotation.Value
 import io.micronaut.security.authentication.AuthenticationException
 import io.micronaut.security.authentication.providers.PasswordEncoder
 import io.micronaut.test.annotation.MicronautTest
@@ -12,10 +13,10 @@ import io.mockk.mockk
 import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.repository.UserRepository
 import java.util.Optional
-import java.util.UUID
 
 @MicronautTest
 class AuthenticationBusinessTest(
+    @Value("\${realworld.token}") private val token: String,
     private val authenticationBusiness: AuthenticationBusiness,
     private val passwordEncoder: PasswordEncoder,
     private val userRepository: UserRepository
@@ -26,20 +27,17 @@ class AuthenticationBusinessTest(
 
     @Test
     fun `should return user with valid token when valid credentials`() {
-        val user = User(
-            UUID.randomUUID(),
-            "Almir Jr.",
-            "almirjr.87@gmail.com",
-            passwordEncoder.encode("123456")
-        )
+        val rawPassword = "123456"
+        val encodedPassword = passwordEncoder.encode(rawPassword)
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = encodedPassword, token = token)
         val userRepositoryMock = getMock(userRepository)
         every { userRepositoryMock.findByEmail(any()) } returns Optional.of(user)
-        every { userRepositoryMock.update(any<User>()) } returns user.copy(token = "123.456.789")
+        every { userRepositoryMock.update(any<User>()) } returns user
 
-        val authenticatedUser = authenticationBusiness.authenticate("almirjr.87@gmail.com", "123456")
+        val authenticatedUser = authenticationBusiness.authenticate(user.email, rawPassword)
 
         authenticatedUser.id shouldBe user.id
-        authenticatedUser.token shouldBe "123.456.789"
+        authenticatedUser.token shouldBe user.token
     }
 
     @Test(expected = AuthenticationException::class)
