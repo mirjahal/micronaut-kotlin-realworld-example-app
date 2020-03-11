@@ -17,7 +17,6 @@ import io.mockk.mockk
 import io.realworld.app.micronaut.domain.business.ProfileBusiness
 import io.realworld.app.micronaut.domain.data.Profile
 import io.realworld.app.micronaut.web.dto.ProfileDto
-import java.util.Objects
 
 @MicronautTest
 class ProfilesControllerTest(
@@ -33,6 +32,7 @@ class ProfilesControllerTest(
     fun `should return a profile for user authenticated when valid username as path parameter`() {
         val profile = Profile("mirjahal", "Mini bio", "image.jpg", false)
         val profileBusinessMock = getMock(profileBusiness)
+
         every { profileBusinessMock.get(any(), any()) } returns profile
 
         val request = HttpRequest.GET<ProfileDto.Response>("/profiles/${profile.username}").apply {
@@ -52,6 +52,7 @@ class ProfilesControllerTest(
     fun `should return a profile for anonymous user when valid username as path parameter`() {
         val profile = Profile("mirjahal", "Mini bio", "image.jpg")
         val profileBusinessMock = getMock(profileBusiness)
+
         every { profileBusinessMock.get(any(), any()) } returns profile
 
         val request = HttpRequest.GET<ProfileDto.Response>("/profiles/${profile.username}")
@@ -69,6 +70,7 @@ class ProfilesControllerTest(
     fun `should return profile when follow user by username in path parameter`() {
         val profile = Profile("mirjahal", "Mini bio", "image.jpg", true)
         val profileBusinessMock = getMock(profileBusiness)
+
         every { profileBusinessMock.followUserByUsername(any(), any()) } returns profile
 
         val request = HttpRequest.POST("/profiles/${profile.username}/follow", "").apply {

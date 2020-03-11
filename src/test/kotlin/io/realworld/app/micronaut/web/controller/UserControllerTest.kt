@@ -32,6 +32,7 @@ class UserControllerTest(
     fun `should return current user when request by token`() {
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456", token = token)
         val userBusinessMock = getMock(userBusiness)
+
         every { userBusinessMock.findById(any()) } returns user
 
         val request = HttpRequest.GET<UserDto.Response>("/user").apply {
@@ -58,6 +59,7 @@ class UserControllerTest(
         )
         val updatedUser = user.copy(image = "image.jpg", bio = "Short bio")
         val userBusinessMock = getMock(userBusiness)
+
         every { userBusinessMock.findById(any()) } returns user
         every { userBusinessMock.update(any()) } returns updatedUser
 

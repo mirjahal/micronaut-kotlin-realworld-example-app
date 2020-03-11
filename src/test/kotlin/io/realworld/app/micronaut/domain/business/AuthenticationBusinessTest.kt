@@ -31,6 +31,7 @@ class AuthenticationBusinessTest(
         val encodedPassword = passwordEncoder.encode(rawPassword)
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = encodedPassword, token = token)
         val userRepositoryMock = getMock(userRepository)
+
         every { userRepositoryMock.findByEmail(any()) } returns Optional.of(user)
         every { userRepositoryMock.update(any<User>()) } returns user
 
@@ -43,6 +44,7 @@ class AuthenticationBusinessTest(
     @Test(expected = AuthenticationException::class)
     fun `should throw AuthenticationException when authentication error`() {
         val userRepositoryMock = getMock(userRepository)
+
         every { userRepositoryMock.findByEmail(any()) } throws AuthenticationException()
 
         authenticationBusiness.authenticate("almirjr.87@gmail.com", "123456")

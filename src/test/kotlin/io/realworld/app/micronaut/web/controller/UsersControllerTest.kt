@@ -36,6 +36,7 @@ class UsersControllerTest(
     fun `should create a new user when valid user data`() {
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userBusinessMock = getMock(userBusiness)
+
         every { userBusinessMock.save(any()) } returns user
 
         val data = UserDto.Request.Create(user.username, user.email, user.password)
@@ -53,6 +54,7 @@ class UsersControllerTest(
     fun `should return user data when valid user credentials`() {
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456", token = token)
         val authenticationBusinessMock = getMock(authenticationBusiness)
+
         every { authenticationBusinessMock.authenticate(any(), any()) } returns user
 
         val data = UserDto.Request.Login(user.email, user.password)

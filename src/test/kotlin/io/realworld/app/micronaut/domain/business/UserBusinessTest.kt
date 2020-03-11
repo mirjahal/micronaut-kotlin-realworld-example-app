@@ -28,6 +28,7 @@ class UserBusinessTest(
     fun `should create a new user when execute save with valid data`() {
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userRepositoryMock = getMock(userRepository)
+
         every { userRepositoryMock.save(any<User>()) } returns user
 
         val savedUser = userBusiness.save(user)
@@ -42,6 +43,7 @@ class UserBusinessTest(
     fun `should return user when search by email`() {
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userRepositoryMock = getMock(userRepository)
+
         every { userRepositoryMock.findByEmail(any()) } returns Optional.of(user)
 
         val savedUser = userBusiness.findByEmail("almirjr.87@gmail.com")
@@ -55,6 +57,7 @@ class UserBusinessTest(
     @Test(expected = ResourceNotFoundException::class)
     fun `should throw ResourceNotFoundException when does not find by email`() {
         val userRepositoryMock = getMock(userRepository)
+
         every { userRepositoryMock.findByEmail(any()) } throws ResourceNotFoundException()
 
         userBusiness.findByEmail("ze@gmail.com")
@@ -65,6 +68,7 @@ class UserBusinessTest(
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userToUpdate = user.copy(bio = "Mini bio", image = "image.jpg")
         val userRepositoryMock = getMock(userRepository)
+
         every { userRepositoryMock.findByEmail(any()) } returns Optional.of(user)
         every { userRepositoryMock.update(any<User>()) } returns userToUpdate
 
@@ -83,6 +87,7 @@ class UserBusinessTest(
     fun `should return user when search by id`() {
         val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
         val userRepositoryMock = getMock(userRepository)
+
         every { userRepositoryMock.findById(any()) } returns Optional.of(user)
 
         val userById = userBusiness.findById(user.id)
