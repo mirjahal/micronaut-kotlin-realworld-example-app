@@ -71,7 +71,7 @@ class ProfilesControllerTest(
         val profile = Profile("mirjahal", "Mini bio", "image.jpg", true)
         val profileBusinessMock = getMock(profileBusiness)
 
-        every { profileBusinessMock.followUserByUsername(any(), any()) } returns profile
+        every { profileBusinessMock.followUser(any(), any()) } returns profile
 
         val request = HttpRequest.POST("/profiles/${profile.username}/follow", "").apply {
             header(HttpHeaders.AUTHORIZATION, "${HttpHeaderValues.AUTHORIZATION_PREFIX_BEARER} $token")
@@ -81,6 +81,26 @@ class ProfilesControllerTest(
 
         response.status shouldBe HttpStatus.CREATED
         response.header(HttpHeaders.LOCATION) shouldBe "/api/profiles/${profile.username}"
+        body.username shouldBe profile.username
+        body.bio shouldBe profile.bio
+        body.image shouldBe profile.image
+        body.following shouldBe profile.following
+    }
+
+    @Test
+    fun `should return profile when unfollow user by username in path parameter`() {
+        val profile = Profile("mirjahal", "Mini bio", "image.jpg", false)
+        val profileBusinessMock = getMock(profileBusiness)
+
+        every { profileBusinessMock.unfollowUser(any(), any()) } returns profile
+
+        val request = HttpRequest.DELETE<ProfileDto.Response>("/profiles/${profile.username}/follow").apply {
+            header(HttpHeaders.AUTHORIZATION, "${HttpHeaderValues.AUTHORIZATION_PREFIX_BEARER} $token")
+        }
+        val response = httpClient.toBlocking().exchange(request, ProfileDto.Response::class.java)
+        val body = response.body.get()
+
+        response.status shouldBe HttpStatus.OK
         body.username shouldBe profile.username
         body.bio shouldBe profile.bio
         body.image shouldBe profile.image

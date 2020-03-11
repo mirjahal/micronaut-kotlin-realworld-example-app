@@ -3,6 +3,7 @@ package io.realworld.app.micronaut.domain.business.impl
 import io.realworld.app.micronaut.domain.business.ProfileBusiness
 import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.data.Profile
+import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.domain.entity.UserFollow
 import io.realworld.app.micronaut.domain.entity.UserFollowPK
 import io.realworld.app.micronaut.repository.UserFollowRepository
@@ -17,7 +18,7 @@ class ProfileBusinessImpl(
 
     override fun get(username: String, currentUserId: UUID?): Profile {
         val followedUser = userBusiness.findByUsername(username)
-        val profile = Profile(followedUser.username, followedUser.bio, followedUser.image)
+        val profile = buildProfile(followedUser)
 
         if (currentUserId != null) {
             val followerUser = userBusiness.findById(currentUserId)
@@ -27,15 +28,27 @@ class ProfileBusinessImpl(
         return profile
     }
 
-    override fun followUserByUsername(username: String, currentUserId: UUID): Profile {
+    override fun followUser(username: String, currentUserId: UUID): Profile {
+        val userFollow = userFollowRepository.save(getUserFollow(username, currentUserId))
+
+        return buildProfile(userFollow.userFollowPK.followedUser, true)
+    }
+
+    override fun unfollowUser(username: String, currentUserId: UUID): Profile {
+        val userFollow = getUserFollow(username, currentUserId)
+        userFollowRepository.delete(userFollow)
+
+        return buildProfile(userFollow.userFollowPK.followedUser, false)
+    }
+
+    private fun getUserFollow(username: String, currentUserId: UUID): UserFollow {
         val followerUser = userBusiness.findById(currentUserId)
         val followedUser = userBusiness.findByUsername(username)
-
         val userFollowPK = UserFollowPK(followerUser, followedUser)
-        val userFollow = UserFollow(userFollowPK)
-        userFollowRepository.save(userFollow)
 
-        return Profile(followedUser.username, followedUser.bio, followedUser.image, true)
+        return UserFollow(userFollowPK)
     }
+
+    private fun buildProfile(user: User, following: Boolean? = null) = Profile(user.username, user.bio, user.image, following)
 
 }

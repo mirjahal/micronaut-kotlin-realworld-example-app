@@ -3,6 +3,7 @@ package io.realworld.app.micronaut.web.controller
 import io.micronaut.context.annotation.Parameter
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Delete
 import io.micronaut.http.annotation.Get
 import io.micronaut.http.annotation.Post
 import io.micronaut.security.annotation.Secured
@@ -22,7 +23,7 @@ class ProfilesController(
     @Get("/{username}")
     @Secured(IS_AUTHENTICATED, IS_ANONYMOUS)
     fun get(@Parameter username: String, principal: Principal?) : HttpResponse<ProfileDto.Response> {
-        val currentUserId = if (principal != null) UUID.fromString(principal.name) else null
+        val currentUserId = if (principal != null) getUserUuid(principal.name) else null
         val profileDto = profileBusiness.get(username, currentUserId).let { profile ->
             ProfileDto.Response.fromData(profile)
         }
@@ -33,12 +34,23 @@ class ProfilesController(
     @Post("/{username}/follow")
     @Secured(IS_AUTHENTICATED)
     fun follow(@Parameter username: String, principal: Principal): HttpResponse<ProfileDto.Response> {
-        val currentUserId = UUID.fromString(principal.name)
-        val profileDto = profileBusiness.followUserByUsername(username, currentUserId).let { profile ->
+        val profileDto = profileBusiness.followUser(username, getUserUuid(principal.name)).let { profile ->
             ProfileDto.Response.fromData(profile)
         }
 
         return HttpResponse.created(profileDto, URI.create("/api/profiles/${profileDto.username}"))
     }
+
+    @Delete("/{username}/follow")
+    @Secured(IS_AUTHENTICATED)
+    fun unfollow(@Parameter username: String, principal: Principal): HttpResponse<ProfileDto.Response> {
+        val profileDto = profileBusiness.unfollowUser(username, getUserUuid(principal.name)).let { profile ->
+            ProfileDto.Response.fromData(profile)
+        }
+
+        return HttpResponse.ok(profileDto)
+    }
+
+    private fun getUserUuid(idAsString: String) = UUID.fromString(idAsString)
 
 }
