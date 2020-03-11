@@ -10,7 +10,10 @@ import io.micronaut.test.annotation.MockBean
 import io.micronaut.test.extensions.kotlintest.MicronautKotlinTestExtension.getMock
 import io.mockk.every
 import io.mockk.mockk
+import io.realworld.app.micronaut.domain.data.Profile
 import io.realworld.app.micronaut.domain.entity.User
+import io.realworld.app.micronaut.domain.entity.UserFollow
+import io.realworld.app.micronaut.domain.entity.UserFollowPK
 import io.realworld.app.micronaut.repository.UserFollowRepository
 import java.util.UUID
 
@@ -38,6 +41,7 @@ class ProfileBusinessTest(
             bio = "Mini bio",
             image = "image.jpg")
         val userBusinessMock = getMock(userBusiness)
+
         every { userBusinessMock.findByUsername(any()) } returns user
 
         val profile = profileBusiness.get(user.username)
@@ -54,6 +58,7 @@ class ProfileBusinessTest(
         val followedUser = User(username = "fulano", email = "fulano@gmail.com", password = "abcdef", bio = "Bios", image = "image.jpg")
         val userBusinessMock = getMock(userBusiness)
         val userFollowRepositoryMock = getMock(userFollowRepository)
+
         every { userBusinessMock.findByUsername(any()) } returns followedUser
         every { userBusinessMock.findById(any()) } returns followerUser
         every { userFollowRepositoryMock.findById(any()).isPresent } returns true
@@ -63,6 +68,26 @@ class ProfileBusinessTest(
         profile.username shouldBe followedUser.username
         profile.image shouldBe followedUser.image
         profile.bio shouldBe followedUser.bio
+        profile.following!!.shouldBeTrue()
+    }
+
+    @Test
+    fun `should save user follow relationship when valid username and valid user id`() {
+        val followerUser = User(username = "mirjahal", email = "almirjr.87@gmail.com", password = "123456", token = token)
+        val followedUser = User(username = "fulano", email = "fulano@gmail.com", password = "abcdef", bio = "Bios", image = "image.jpg")
+        val userFollow = UserFollow(UserFollowPK(followerUser, followedUser))
+        val userBusinessMock = getMock(userBusiness)
+        val userFollowRepositoryMock = getMock(userFollowRepository)
+
+        every { userBusinessMock.findByUsername(any()) } returns followedUser
+        every { userBusinessMock.findById(any()) } returns followerUser
+        every { userFollowRepositoryMock.save(any<UserFollow>()) } returns userFollow
+
+        val profile = profileBusiness.followUserByUsername(followedUser.username, followerUser.id)
+
+        profile.username shouldBe followedUser.username
+        profile.bio shouldBe followedUser.bio
+        profile.image shouldBe followedUser.image
         profile.following!!.shouldBeTrue()
     }
 

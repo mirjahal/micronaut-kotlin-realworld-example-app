@@ -17,6 +17,7 @@ import io.mockk.mockk
 import io.realworld.app.micronaut.domain.business.ProfileBusiness
 import io.realworld.app.micronaut.domain.data.Profile
 import io.realworld.app.micronaut.web.dto.ProfileDto
+import java.util.Objects
 
 @MicronautTest
 class ProfilesControllerTest(
@@ -58,6 +59,26 @@ class ProfilesControllerTest(
         val body = response.body.get()
 
         response.status shouldBe HttpStatus.OK
+        body.username shouldBe profile.username
+        body.bio shouldBe profile.bio
+        body.image shouldBe profile.image
+        body.following shouldBe profile.following
+    }
+
+    @Test
+    fun `should return profile when follow user by username in path parameter`() {
+        val profile = Profile("mirjahal", "Mini bio", "image.jpg", true)
+        val profileBusinessMock = getMock(profileBusiness)
+        every { profileBusinessMock.followUserByUsername(any(), any()) } returns profile
+
+        val request = HttpRequest.POST("/profiles/${profile.username}/follow", "").apply {
+            header(HttpHeaders.AUTHORIZATION, "${HttpHeaderValues.AUTHORIZATION_PREFIX_BEARER} $token")
+        }
+        val response = httpClient.toBlocking().exchange(request, ProfileDto.Response::class.java)
+        val body = response.body.get()
+
+        response.status shouldBe HttpStatus.CREATED
+        response.header(HttpHeaders.LOCATION) shouldBe "/api/profiles/${profile.username}"
         body.username shouldBe profile.username
         body.bio shouldBe profile.bio
         body.image shouldBe profile.image

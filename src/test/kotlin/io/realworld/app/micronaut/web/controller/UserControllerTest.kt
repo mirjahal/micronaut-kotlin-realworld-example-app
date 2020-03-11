@@ -35,7 +35,7 @@ class UserControllerTest(
         every { userBusinessMock.findById(any()) } returns user
 
         val request = HttpRequest.GET<UserDto.Response>("/user").apply {
-            header(HttpHeaders.AUTHORIZATION, "$AUTHORIZATION_PREFIX_BEARER ${user.token}")
+            header(HttpHeaders.AUTHORIZATION, "$AUTHORIZATION_PREFIX_BEARER $token")
         }
         val response = httpClient.toBlocking().exchange(request, UserDto.Response::class.java)
         val body = response.body.get()
