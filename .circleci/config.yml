@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 jobs:
   test:
@@ -25,3 +25,9 @@ jobs:
       - run:
           name: Run tests
           command: gradle test
+
+workflows:
+  version: 2.1
+  run_pipeline:
+    jobs:
+      - test
