@@ -1,6 +1,6 @@
 package io.realworld.app.micronaut.domain.business
 
-import io.realworld.app.micronaut.domain.data.Profile
+import io.realworld.app.micronaut.application.data.Profile
 import java.util.UUID
 
 interface ProfileBusiness {
