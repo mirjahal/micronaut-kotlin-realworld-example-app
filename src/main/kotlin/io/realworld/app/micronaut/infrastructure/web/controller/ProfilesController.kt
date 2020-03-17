@@ -10,6 +10,7 @@ import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule.IS_ANONYMOUS
 import io.micronaut.security.rules.SecurityRule.IS_AUTHENTICATED
 import io.realworld.app.micronaut.domain.business.ProfileBusiness
+import io.realworld.app.micronaut.infrastructure.extensions.toUUID
 import io.realworld.app.micronaut.infrastructure.web.dto.ProfileDto
 import java.net.URI
 import java.security.Principal
@@ -23,7 +24,7 @@ class ProfilesController(
     @Get("/{username}")
     @Secured(IS_AUTHENTICATED, IS_ANONYMOUS)
     fun get(@Parameter username: String, principal: Principal?) : HttpResponse<ProfileDto.Response> {
-        val currentUserId = if (principal != null) getUserUuid(principal.name) else null
+        val currentUserId = if (principal != null) principal.name.toUUID() else null
         val profileDto = profileBusiness.get(username, currentUserId).let { profile ->
             ProfileDto.Response.fromData(profile)
         }
@@ -34,7 +35,7 @@ class ProfilesController(
     @Post("/{username}/follow")
     @Secured(IS_AUTHENTICATED)
     fun follow(@Parameter username: String, principal: Principal): HttpResponse<ProfileDto.Response> {
-        val profileDto = profileBusiness.followUser(username, getUserUuid(principal.name)).let { profile ->
+        val profileDto = profileBusiness.followUser(username, principal.name.toUUID()).let { profile ->
             ProfileDto.Response.fromData(profile)
         }
 
@@ -44,13 +45,11 @@ class ProfilesController(
     @Delete("/{username}/follow")
     @Secured(IS_AUTHENTICATED)
     fun unfollow(@Parameter username: String, principal: Principal): HttpResponse<ProfileDto.Response> {
-        val profileDto = profileBusiness.unfollowUser(username, getUserUuid(principal.name)).let { profile ->
+        val profileDto = profileBusiness.unfollowUser(username, principal.name.toUUID()).let { profile ->
             ProfileDto.Response.fromData(profile)
         }
 
         return HttpResponse.ok(profileDto)
     }
-
-    private fun getUserUuid(idAsString: String) = UUID.fromString(idAsString)
 
 }

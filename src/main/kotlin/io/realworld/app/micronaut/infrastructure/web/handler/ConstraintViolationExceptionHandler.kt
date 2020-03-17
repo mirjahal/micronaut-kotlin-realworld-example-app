@@ -9,7 +9,6 @@ import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Produces
 import io.micronaut.http.server.exceptions.ExceptionHandler
 import io.micronaut.validation.exceptions.ConstraintExceptionHandler
-import io.realworld.app.micronaut.infrastructure.web.handler.Errors
 import org.hibernate.validator.internal.engine.path.PathImpl
 import javax.inject.Singleton
 import javax.validation.ConstraintViolationException

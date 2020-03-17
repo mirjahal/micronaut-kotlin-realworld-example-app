@@ -7,7 +7,6 @@ import io.micronaut.http.HttpResponse
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.Produces
 import io.micronaut.http.server.exceptions.ExceptionHandler
-import io.realworld.app.micronaut.infrastructure.web.handler.Errors
 import javax.inject.Singleton
 
 @Produces

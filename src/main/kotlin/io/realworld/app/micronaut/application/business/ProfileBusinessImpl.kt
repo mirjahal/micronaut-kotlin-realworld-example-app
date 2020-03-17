@@ -1,6 +1,6 @@
 package io.realworld.app.micronaut.application.business
 
-import io.realworld.app.micronaut.application.data.Profile
+import io.realworld.app.micronaut.application.data.ProfileData
 import io.realworld.app.micronaut.domain.business.ProfileBusiness
 import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.entity.User
@@ -16,7 +16,7 @@ class ProfileBusinessImpl(
     private val userFollowRepository: UserFollowRepository
 ) : ProfileBusiness {
 
-    override fun get(username: String, currentUserId: UUID?): Profile {
+    override fun get(username: String, currentUserId: UUID?): ProfileData {
         val followedUser = userBusiness.findByUsername(username)
         val profile = buildProfile(followedUser)
 
@@ -28,13 +28,13 @@ class ProfileBusinessImpl(
         return profile
     }
 
-    override fun followUser(username: String, currentUserId: UUID): Profile {
+    override fun followUser(username: String, currentUserId: UUID): ProfileData {
         val userFollow = userFollowRepository.save(getUserFollow(username, currentUserId))
 
         return buildProfile(userFollow.userFollowPK.followedUser, true)
     }
 
-    override fun unfollowUser(username: String, currentUserId: UUID): Profile {
+    override fun unfollowUser(username: String, currentUserId: UUID): ProfileData {
         val userFollow = getUserFollow(username, currentUserId)
         userFollowRepository.delete(userFollow)
 
@@ -49,6 +49,6 @@ class ProfileBusinessImpl(
         return UserFollow(userFollowPK)
     }
 
-    private fun buildProfile(user: User, following: Boolean? = null) = Profile(user.username, user.bio, user.image, following)
+    private fun buildProfile(user: User, following: Boolean? = null) = ProfileData(user.username, user.bio, user.image, following)
 
 }

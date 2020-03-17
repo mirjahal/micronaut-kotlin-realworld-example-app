@@ -1,0 +1,11 @@
+CREATE TABLE article (
+    id VARBINARY(16) NOT NULL PRIMARY KEY,
+    user_id VARBINARY(16) NOT NULL,
+    slug VARCHAR(255) NOT NULL UNIQUE,
+    title VARCHAR(255) NOT NULL,
+    description VARCHAR(500) NOT NULL,
+    body VARCHAR(500) NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    CONSTRAINT user_id_fk FOREIGN KEY (user_id) REFERENCES `user` (id)
+) DEFAULT CHARSET=utf8;

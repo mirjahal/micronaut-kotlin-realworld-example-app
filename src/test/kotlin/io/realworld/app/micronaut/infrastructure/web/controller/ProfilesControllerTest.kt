@@ -15,7 +15,7 @@ import io.micronaut.test.extensions.kotlintest.MicronautKotlinTestExtension.getM
 import io.mockk.every
 import io.mockk.mockk
 import io.realworld.app.micronaut.domain.business.ProfileBusiness
-import io.realworld.app.micronaut.application.data.Profile
+import io.realworld.app.micronaut.application.data.ProfileData
 import io.realworld.app.micronaut.infrastructure.web.dto.ProfileDto
 
 @MicronautTest
@@ -30,7 +30,7 @@ class ProfilesControllerTest(
 
     @Test
     fun `should return a profile for user authenticated when valid username as path parameter`() {
-        val profile = Profile("mirjahal", "Mini bio", "image.jpg", false)
+        val profile = ProfileData("mirjahal", "Mini bio", "image.jpg", false)
         val profileBusinessMock = getMock(profileBusiness)
 
         every { profileBusinessMock.get(any(), any()) } returns profile
@@ -50,7 +50,7 @@ class ProfilesControllerTest(
 
     @Test
     fun `should return a profile for anonymous user when valid username as path parameter`() {
-        val profile = Profile("mirjahal", "Mini bio", "image.jpg")
+        val profile = ProfileData("mirjahal", "Mini bio", "image.jpg")
         val profileBusinessMock = getMock(profileBusiness)
 
         every { profileBusinessMock.get(any(), any()) } returns profile
@@ -68,7 +68,7 @@ class ProfilesControllerTest(
 
     @Test
     fun `should return profile when follow user by username in path parameter`() {
-        val profile = Profile("mirjahal", "Mini bio", "image.jpg", true)
+        val profile = ProfileData("mirjahal", "Mini bio", "image.jpg", true)
         val profileBusinessMock = getMock(profileBusiness)
 
         every { profileBusinessMock.followUser(any(), any()) } returns profile
@@ -89,7 +89,7 @@ class ProfilesControllerTest(
 
     @Test
     fun `should return profile when unfollow user by username in path parameter`() {
-        val profile = Profile("mirjahal", "Mini bio", "image.jpg", false)
+        val profile = ProfileData("mirjahal", "Mini bio", "image.jpg", false)
         val profileBusinessMock = getMock(profileBusiness)
 
         every { profileBusinessMock.unfollowUser(any(), any()) } returns profile

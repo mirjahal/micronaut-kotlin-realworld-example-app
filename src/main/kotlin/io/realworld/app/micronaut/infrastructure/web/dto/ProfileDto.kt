@@ -1,7 +1,7 @@
 package io.realworld.app.micronaut.infrastructure.web.dto
 
 import com.fasterxml.jackson.annotation.JsonRootName
-import io.realworld.app.micronaut.application.data.Profile
+import io.realworld.app.micronaut.application.data.ProfileData
 
 @JsonRootName("profile")
 sealed class ProfileDto {
@@ -13,12 +13,12 @@ sealed class ProfileDto {
         val following: Boolean? = null
     ) : ProfileDto() {
         companion object {
-            fun fromData(profile: Profile) : Response {
+            fun fromData(profileData: ProfileData) : Response {
                 return Response(
-                    profile.username,
-                    profile.bio,
-                    profile.image,
-                    profile.following
+                    profileData.username,
+                    profileData.bio,
+                    profileData.image,
+                    profileData.following
                 )
             }
         }
