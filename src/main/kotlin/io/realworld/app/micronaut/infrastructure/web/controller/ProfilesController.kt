@@ -24,8 +24,7 @@ class ProfilesController(
     @Get("/{username}")
     @Secured(IS_AUTHENTICATED, IS_ANONYMOUS)
     fun get(@Parameter username: String, principal: Principal?) : HttpResponse<ProfileDto.Response> {
-        val currentUserId = if (principal != null) principal.name.toUUID() else null
-        val profileDto = profileBusiness.get(username, currentUserId).let { profile ->
+        val profileDto = profileBusiness.get(username, principal?.name?.toUUID()).let { profile ->
             ProfileDto.Response.fromData(profile)
         }
 

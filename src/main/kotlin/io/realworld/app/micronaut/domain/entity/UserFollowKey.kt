@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
 @Embeddable
-data class UserFollowPK(
+data class UserFollowKey(
     @ManyToOne
     @JoinColumn(name = "follower_user_id")
     val followerUser: User,

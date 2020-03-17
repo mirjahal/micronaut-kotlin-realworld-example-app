@@ -5,7 +5,7 @@ import io.realworld.app.micronaut.domain.business.ProfileBusiness
 import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.domain.entity.UserFollow
-import io.realworld.app.micronaut.domain.entity.UserFollowPK
+import io.realworld.app.micronaut.domain.entity.UserFollowKey
 import io.realworld.app.micronaut.domain.repository.UserFollowRepository
 import java.util.UUID
 import javax.inject.Singleton
@@ -22,7 +22,7 @@ class ProfileBusinessImpl(
 
         if (currentUserId != null) {
             val followerUser = userBusiness.findById(currentUserId)
-            profile.following = userFollowRepository.findById(UserFollowPK(followerUser, followedUser)).isPresent
+            profile.following = userFollowRepository.findById(UserFollowKey(followerUser, followedUser)).isPresent
         }
 
         return profile
@@ -31,20 +31,20 @@ class ProfileBusinessImpl(
     override fun followUser(username: String, currentUserId: UUID): ProfileData {
         val userFollow = userFollowRepository.save(getUserFollow(username, currentUserId))
 
-        return buildProfile(userFollow.userFollowPK.followedUser, true)
+        return buildProfile(userFollow.userFollowKey.followedUser, true)
     }
 
     override fun unfollowUser(username: String, currentUserId: UUID): ProfileData {
         val userFollow = getUserFollow(username, currentUserId)
         userFollowRepository.delete(userFollow)
 
-        return buildProfile(userFollow.userFollowPK.followedUser, false)
+        return buildProfile(userFollow.userFollowKey.followedUser, false)
     }
 
     private fun getUserFollow(username: String, currentUserId: UUID): UserFollow {
         val followerUser = userBusiness.findById(currentUserId)
         val followedUser = userBusiness.findByUsername(username)
-        val userFollowPK = UserFollowPK(followerUser, followedUser)
+        val userFollowPK = UserFollowKey(followerUser, followedUser)
 
         return UserFollow(userFollowPK)
     }

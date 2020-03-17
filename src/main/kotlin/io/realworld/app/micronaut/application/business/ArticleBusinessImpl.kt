@@ -1,8 +1,8 @@
 package io.realworld.app.micronaut.application.business
 
-import com.github.slugify.Slugify
 import io.realworld.app.micronaut.application.data.ArticleData
 import io.realworld.app.micronaut.application.data.ProfileData
+import io.realworld.app.micronaut.application.providers.SlugProvider
 import io.realworld.app.micronaut.domain.business.ArticleBusiness
 import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.entity.Article
@@ -17,6 +17,7 @@ import javax.inject.Singleton
 
 @Singleton
 class ArticleBusinessImpl(
+    private val slugProvider: SlugProvider,
     private val userBusiness: UserBusiness,
     private val tagRepository: TagRepository,
     private val articleRepository: ArticleRepository,
@@ -47,7 +48,7 @@ class ArticleBusinessImpl(
     private fun saveArticle(articleData: ArticleData, userId: UUID) : Article {
         val user = userBusiness.findById(userId)
         val article = Article(
-            slug = Slugify().slugify(articleData.title),
+            slug = slugProvider.slug(articleData.title),
             title = articleData.title,
             description = articleData.description,
             body = articleData.body,

@@ -3,15 +3,16 @@ package io.realworld.app.micronaut.infrastructure.web.dto
 import com.fasterxml.jackson.annotation.JsonRootName
 import io.realworld.app.micronaut.application.data.ArticleData
 import java.time.LocalDateTime
+import javax.validation.constraints.NotBlank
 
 @JsonRootName("article")
 sealed class ArticleDto {
 
     sealed class Request : ArticleDto() {
         data class Create(
-            val title: String,
-            val description: String,
-            val body: String,
+            @get:NotBlank val title: String,
+            @get:NotBlank val description: String,
+            @get:NotBlank val body: String,
             val tagList: List<String> = mutableListOf()
         ) : Request() {
             companion object {

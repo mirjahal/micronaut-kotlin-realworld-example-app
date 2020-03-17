@@ -8,5 +8,5 @@ import javax.persistence.Table
 @Table(name = "user_follow")
 data class UserFollow(
     @EmbeddedId
-    val userFollowPK: UserFollowPK
+    val userFollowKey: UserFollowKey
 )

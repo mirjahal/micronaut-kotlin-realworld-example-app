@@ -15,7 +15,7 @@ import io.realworld.app.micronaut.domain.business.ProfileBusiness
 import io.realworld.app.micronaut.domain.business.UserBusiness
 import io.realworld.app.micronaut.domain.entity.User
 import io.realworld.app.micronaut.domain.entity.UserFollow
-import io.realworld.app.micronaut.domain.entity.UserFollowPK
+import io.realworld.app.micronaut.domain.entity.UserFollowKey
 import io.realworld.app.micronaut.domain.repository.UserFollowRepository
 import java.util.UUID
 
@@ -77,7 +77,7 @@ class ProfileBusinessImplTest(
     fun `should save user follow relationship when valid username and valid user id`() {
         val followerUser = User(username = "mirjahal", email = "almirjr.87@gmail.com", password = "123456", token = token)
         val followedUser = User(username = "fulano", email = "fulano@gmail.com", password = "abcdef", bio = "Bios", image = "image.jpg")
-        val userFollow = UserFollow(UserFollowPK(followerUser, followedUser))
+        val userFollow = UserFollow(UserFollowKey(followerUser, followedUser))
         val userBusinessMock = getMock(userBusiness)
         val userFollowRepositoryMock = getMock(userFollowRepository)
 

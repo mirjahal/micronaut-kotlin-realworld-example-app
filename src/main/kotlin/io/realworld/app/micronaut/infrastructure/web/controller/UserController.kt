@@ -8,6 +8,7 @@ import io.micronaut.http.annotation.Put
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule.IS_AUTHENTICATED
 import io.realworld.app.micronaut.domain.business.UserBusiness
+import io.realworld.app.micronaut.infrastructure.extensions.toUUID
 import io.realworld.app.micronaut.infrastructure.web.dto.UserDto
 import java.security.Principal
 import java.util.UUID
@@ -20,8 +21,7 @@ class UserController(
     @Get
     @Secured(IS_AUTHENTICATED)
     fun getCurrent(principal: Principal) : HttpResponse<UserDto.Response> {
-        val id = UUID.fromString(principal.name)
-        val user = userBusiness.findById(id)
+        val user = userBusiness.findById(principal.name.toUUID())
         val userResponse = UserDto.Response.fromEntity(user)
 
         return HttpResponse.ok(userResponse)
@@ -30,8 +30,7 @@ class UserController(
     @Put
     @Secured(IS_AUTHENTICATED)
     fun update(@Body userDto: UserDto.Request.Update, principal: Principal) : HttpResponse<UserDto.Response> {
-        val id = UUID.fromString(principal.name)
-        val user = userBusiness.findById(id).let { user ->
+        val user = userBusiness.findById(principal.name.toUUID()).let { user ->
             user.copy(
                 username = userDto.username ?: user.username,
                 email = userDto.email ?: user.email,
