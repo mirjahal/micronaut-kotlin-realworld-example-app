@@ -1,5 +1,6 @@
 package io.realworld.app.micronaut.infrastructure.web.controller
 
+import io.micronaut.context.annotation.Parameter
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
@@ -24,13 +25,24 @@ class ArticlesController(
     @Secured(SecurityRule.IS_AUTHENTICATED)
     fun create(@Body @Valid articleDto: ArticleDto.Request.Create, principal: Principal) : HttpResponse<ArticleDto.Response.Single> {
         val userId = principal.name.toUUID()
-        val articleData = ArticleDto.Request.Create.toData(articleDto)
-
-        val article = articleBusiness.save(articleData, userId)
+        val articleData = ArticleDto.Request.Create.toData(articleDto).let { articleData ->
+            articleBusiness.save(articleData, userId)
+        }
 
         return HttpResponse.created(
-            ArticleDto.Response.Single.fromData(article),
-            URI.create("/api/articles/${article.slug}")
+            ArticleDto.Response.Single.fromData(articleData),
+            URI.create("/api/articles/${articleData.slug}")
+        )
+    }
+
+    @Post("/{slug}/favorite")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    fun favorite(@Parameter slug: String, principal: Principal) : HttpResponse<ArticleDto.Response.Single> {
+        val userId = principal.name.toUUID()
+        val articleData = articleBusiness.favorite(slug, userId)
+
+        return HttpResponse.created(
+            ArticleDto.Response.Single.fromData(articleData)
         )
     }
 

@@ -21,8 +21,7 @@ class ProfileBusinessImpl(
         val profile = buildProfile(followedUser)
 
         if (currentUserId != null) {
-            val followerUser = userBusiness.findById(currentUserId)
-            profile.following = userFollowRepository.findById(UserFollowKey(followerUser, followedUser)).isPresent
+            profile.following = isFollowingUser(followedUser, currentUserId)
         }
 
         return profile
@@ -39,6 +38,12 @@ class ProfileBusinessImpl(
         userFollowRepository.delete(userFollow)
 
         return buildProfile(userFollow.userFollowKey.followedUser, false)
+    }
+
+    override fun isFollowingUser(followedUser: User, currentUserId: UUID): Boolean {
+        val followerUser = userBusiness.findById(currentUserId)
+
+        return userFollowRepository.findById(UserFollowKey(followerUser, followedUser)).isPresent
     }
 
     private fun getUserFollow(username: String, currentUserId: UUID): UserFollow {

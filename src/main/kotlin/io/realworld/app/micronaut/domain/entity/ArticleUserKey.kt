@@ -6,7 +6,7 @@ import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 
 @Embeddable
-data class ArticleTagKey(
+data class ArticleUserKey(
     @ManyToOne @JoinColumn(name = "article_id") val article: Article,
-    @ManyToOne @JoinColumn(name = "tag_id") val tag: Tag
+    @ManyToOne @JoinColumn(name = "user_id") val user: User
 ) : Serializable
