@@ -4,6 +4,7 @@ import io.micronaut.context.annotation.Parameter
 import io.micronaut.http.HttpResponse
 import io.micronaut.http.annotation.Body
 import io.micronaut.http.annotation.Controller
+import io.micronaut.http.annotation.Delete
 import io.micronaut.http.annotation.Post
 import io.micronaut.security.annotation.Secured
 import io.micronaut.security.rules.SecurityRule
@@ -42,6 +43,17 @@ class ArticlesController(
         val articleData = articleBusiness.favorite(slug, userId)
 
         return HttpResponse.created(
+            ArticleDto.Response.Single.fromData(articleData)
+        )
+    }
+
+    @Delete("/{slug}/favorite")
+    @Secured(SecurityRule.IS_AUTHENTICATED)
+    fun unfavorite(@Parameter slug: String, principal: Principal) : HttpResponse<ArticleDto.Response.Single> {
+        val userId = principal.name.toUUID()
+        val articleData = articleBusiness.unfavorite(slug, userId)
+
+        return HttpResponse.ok(
             ArticleDto.Response.Single.fromData(articleData)
         )
     }

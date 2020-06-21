@@ -7,5 +7,6 @@ interface ArticleBusiness {
 
     fun save(articleData: ArticleData, userId: UUID): ArticleData
     fun favorite(slug: String, userId: UUID): ArticleData
+    fun unfavorite(slug: String, userId: UUID): ArticleData
 
 }

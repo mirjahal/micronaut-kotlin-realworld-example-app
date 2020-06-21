@@ -46,6 +46,18 @@ class ArticleBusinessImpl(
         return buildArticleData(article, articleTags, user)
     }
 
+    override fun unfavorite(slug: String, userId: UUID): ArticleData {
+        val user = userBusiness.findById(userId)
+        val article = articleRepository
+            .findBySlug(slug)
+            .orElseThrow { ResourceNotFoundException() }
+        val articleTags = articleTagRepository.findByArticle(article)
+
+        articleRepository.delete(article)
+
+        return buildArticleData(article, articleTags, user)
+    }
+
     private fun saveArticle(articleData: ArticleData, user: User) : Article {
         val article = Article(
             slug = slugProvider.slug(articleData.title),

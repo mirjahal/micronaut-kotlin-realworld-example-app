@@ -101,4 +101,38 @@ class ArticlesControllerTest(
         body.author.username shouldBe articleData.author?.username
     }
 
+    @Test
+    fun `should unfavorited a article when valid slug as path parameter`() {
+        val currentLocalDateTime = LocalDateTime.now()
+        val articleData = ArticleData(
+            slug = "how-to-train-your-dragon",
+            title = "How to train your dragon",
+            description = "Ever wonder how?",
+            body = "It takes a Jacobian",
+            tagList = listOf("dragons", "training"),
+            createdAt = currentLocalDateTime,
+            updatedAt = currentLocalDateTime,
+            author = ProfileData(username = "Almir Jr.", bio = "Mini bio", image = "selfie.png", following = false)
+        )
+        val articleBusinessMock = getMock(articleBusiness)
+
+        every { articleBusinessMock.unfavorite(any(), any()) } returns articleData
+
+        val request = HttpRequest.DELETE<ArticleDto.Response.Single>("/articles/${articleData.slug}/favorite").apply {
+            header(HttpHeaders.AUTHORIZATION, "${HttpHeaderValues.AUTHORIZATION_PREFIX_BEARER} $token")
+        }
+        val response = httpClient.toBlocking().exchange(request, ArticleDto.Response.Single::class.java)
+        val body = response.body.get()
+
+        response.status shouldBe HttpStatus.OK
+        body.slug shouldBe articleData.slug
+        body.title shouldBe articleData.title
+        body.description shouldBe articleData.description
+        body.body shouldBe articleData.body
+        body.tagList shouldContainAll articleData.tagList
+        body.createdAt shouldBe articleData.createdAt
+        body.updatedAt shouldBe articleData.updatedAt
+        body.author.username shouldBe articleData.author?.username
+    }
+
 }

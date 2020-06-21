@@ -132,4 +132,44 @@ class ArticleBusinessImplTest(
         articleData.author?.username shouldBe article.author.username
     }
 
+    @Test
+    fun `should delete a favorite article for user when execute unfavorite with valid slug`() {
+        val userAuthenticatedId = UUID.randomUUID()
+        val currentLocalDateTime = LocalDateTime.now()
+        val user = User(username = "Almir Jr.", email = "almirjr.87@gmail.com", password = "123456")
+        val article = Article(
+            slug = "how-to-train-your-dragon",
+            title = "How to train your dragon",
+            description = "Ever wonder how?",
+            body = "It takes a Jacobian",
+            createdAt = currentLocalDateTime,
+            updatedAt = currentLocalDateTime,
+            author = user
+        )
+
+        val userBusinessMock = getMock(userBusiness)
+        val articleRepositoryMock = getMock(articleRepository)
+        val articleTagRepositoryMock = getMock(articleTagRepository)
+        val articleUserRepositoryMock = getMock(articleUserRepository)
+
+        every { userBusinessMock.findById(any()) } returns user
+        every { articleRepositoryMock.findBySlug(any()) } returns Optional.of(article)
+        every { articleRepositoryMock.delete(any()) } returns Unit
+        every { articleTagRepositoryMock.findByArticle(any()) } returns listOf()
+        every { articleUserRepositoryMock.findById(any()) } returns Optional.empty()
+        every { articleUserRepositoryMock.countByArticleUserKeyArticleId(any()) } returns 0
+
+        val articleData = articleBusiness.unfavorite(article.slug, userAuthenticatedId)
+
+        articleData.slug shouldBe article.slug
+        articleData.title shouldBe article.title
+        articleData.description shouldBe article.description
+        articleData.body shouldBe article.body
+        articleData.createdAt shouldBe article.createdAt
+        articleData.updatedAt shouldBe article.updatedAt
+        articleData.favorited.shouldBeFalse()
+        articleData.favoritesCount shouldBe 0
+        articleData.author?.username shouldBe article.author.username
+    }
+
 }
